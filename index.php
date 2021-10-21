@@ -7,10 +7,18 @@
 </head>
 <body>
 <?php
-$api_url = 'https://pokeapi.co/api/v2/pokemon/1';
+const PokeURL = "https://pokeapi.co/api/v2/pokemon/"; // const poke url
+$pokemonId ="25"; // start pokemon
+if (isset($_GET["searchValue"])){
+    $pokemonId = $_GET["searchValue"];
+    if($pokemonId==""){
+        $pokemonId = 25; // if the is empty it start in 25
+    }
+}
+
 
 // Read JSON file
-$json_data = file_get_contents($api_url);
+$json_data = file_get_contents(PokeURL . $pokemonId); // poke url declared before
 // Decode JSON data into PHP array
 $response_data = json_decode($json_data);
 // All pokemon data exists in 'data' object
@@ -19,23 +27,55 @@ $id = $response_data->id;
 $name = $response_data->name;
 $moves = $response_data->moves;
 $moves = array_slice($moves, 0, 4);
+
+
+$api_url2 = "https://pokeapi.co/api/v2/pokemon-species/".$pokemonId;
+
+// Read JSON file
+$json_data = file_get_contents($api_url2);
+// Decode JSON data into PHP array
+$response_data = json_decode($json_data,JSON_OBJECT_AS_ARRAY);
+var_dump((array_values($response_data)[4]['url'])); //save into variable
+
+
+$api_url3 = array_values($response_data)[4]['url'];
+
+$json_data = file_get_contents($api_url3);
+// Decode JSON data into PHP array
+$response_data = json_decode($json_data,JSON_OBJECT_AS_ARRAY);
+var_dump(array_values($response_data));
+//acces the name inside the array
+$name2 = array_values($response_data)[1]['species']['name']; // [1]outside because array_values is with reponse_data
+var_dump($name2);
+//created an if statement
+if(array_values($response_data)[[evolves_to][1] < 1 == false)
 ?>
 <header>
     <h1><img src="/images/Pokédex_logo.png" class="pokedex" alt="pokedex"></h1><img src="https://i.ya-webdesign.com/images/pokeball-pixel-png-2.png" alt="pokeball"/>
 </header>
 <section></section>
+<form>
 <div>
-    <input id="input" placeholder="Pokémon name or ID">
+    <input id="input" placeholder="Pokémon name or ID" method="GET" name="searchValue">
     <button class="btn" id="searchBtn">search</button>
 </div>
+</form>
 <img src=" <?php echo $img ?> " class="pokemon" id="image" alt="pokemon">
-<div class="pokemon" id="pokeId"><?php echo $id ?></div>
-<div class="pokemon" id="name"><?php echo $name ?></div>
+<div class="pokemon" id="pokeId"><?php echo "ID-Number: ".$id ?></div>
+<div class="pokemon" id="name"><?php echo "Name: ". $name ?></div>
 <div class="pokemon" id="pokemoves">
     <?php
-    for ($x = 1; $x <= 4; $x++) {
-        echo "<p key=$x>{$moves[$x]->move->name}</p>";
+    $moves_length = count($moves);
+    if($moves_length <= 4) {
+        for ($x = 0; $x < count($moves); $x++) {
+            echo "<li >{$moves[$x]->move->name}</li>";
+        }
+    } else {
+        for ($x = 0; $x < 4; $x++) {
+            echo "<li >{$moves[$x]->move->name}</li>";
+        }
     }
+
     ?>
 </div>
 <img src="" class="pokemon" id="evo-1" alt="evo1">
