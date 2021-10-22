@@ -35,7 +35,7 @@ $api_url2 = "https://pokeapi.co/api/v2/pokemon-species/".$pokemonId;
 $json_data = file_get_contents($api_url2);
 // Decode JSON data into PHP array
 $response_data = json_decode($json_data,JSON_OBJECT_AS_ARRAY);
-var_dump((array_values($response_data)[4]['url'])); //save into variable
+//var_dump((array_values($response_data)[4]['url'])); //save into variable
 
 
 $api_url3 = array_values($response_data)[4]['url'];
@@ -43,12 +43,34 @@ $api_url3 = array_values($response_data)[4]['url'];
 $json_data = file_get_contents($api_url3);
 // Decode JSON data into PHP array
 $response_data = json_decode($json_data,JSON_OBJECT_AS_ARRAY);
-var_dump(array_values($response_data));
+//var_dump(array_values($response_data));
 //acces the name inside the array
-$name2 = array_values($response_data)[1]['species']['name']; // [1]outside because array_values is with reponse_data
-var_dump($name2);
+$name2 = [array_values($response_data)[1]['species']['name']]; // [1]outside because array_values is with reponse_data
+
 //created an if statement
-if(array_values($response_data)[[evolves_to][1] < 1 == false)
+if(count(array_values($response_data)[1]["evolves_to"]) < 1 == false) {
+    array_push($name2, array_values($response_data)[1]["evolves_to"][0]["species"]["name"]);
+    if (count(array_values($response_data)[1]["evolves_to"][0]["evolves_to"]) < 1 == false) {
+        array_push($name2, array_values($response_data)[1]["evolves_to"][0]["evolves_to"][0]["species"]["name"]);
+    }
+}
+
+/*foreach ($name2 as $value) {
+    echo $value;
+    $json_data = file_get_contents(PokeURL . $value); // poke url declared before
+// Decode JSON data into PHP array
+    $response_data = json_decode($json_data, JSON_OBJECT_AS_ARRAY);
+    $imgevo = array_values($response_data)[14]["front_default"];
+
+    if  (isset($imgevo)) {
+        echo "<img src='$imgevo'> </img>" ;
+} else {
+        //echo "<img src='array_values($response_data)[14]['front_default']'> </img>" ;
+}
+}
+*/
+
+//if(array_values($response_data)["evolves_to"][1] < 1 == false)
 ?>
 <header>
     <h1><img src="/images/Pokédex_logo.png" class="pokedex" alt="pokedex"></h1><img src="https://i.ya-webdesign.com/images/pokeball-pixel-png-2.png" alt="pokeball"/>
@@ -78,9 +100,20 @@ if(array_values($response_data)[[evolves_to][1] < 1 == false)
 
     ?>
 </div>
-<img src="" class="pokemon" id="evo-1" alt="evo1">
-<img src="" class="pokemon" id="evo-2" alt="evo2">
-<img src="" class="pokemon" id="evo-3" alt="evo3">
+<?php foreach ($name2 as $value) {
+//echo $value;
+$json_data = file_get_contents(PokeURL . $value); // poke url declared before
+// Decode JSON data into PHP array
+$response_data = json_decode($json_data, JSON_OBJECT_AS_ARRAY);
+$imgevo = array_values($response_data)[14]["front_default"];
+
+if  (isset($imgevo)) {
+echo "<img src='$imgevo'> </img>" ;
+} else {
+//echo "<img src='array_values($response_data)[14]['front_default']'> </img>" ;
+}
+}
+?>
 <div>
     <button class="btn" id="previousBtn">previous</button>
     <button class="btn" id="nextBtn">next</button>
